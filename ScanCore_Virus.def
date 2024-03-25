@@ -1,5 +1,3 @@
-AdWind			c3a3ac48b3c6e0f7e48c7a2bb2dc3fa4f2c8d5fd0fcf1e0bce096b6b0f50eccf
-AdWind.2		c5387a9af9ee4ee5809d59680161059c03c029794dec391b142a97baa8d5d42c	
 Exploit CVE-2016-7200	188.165.163.226
 Exploit CVE-2016-7200.1	<Session SID="161" BitFlags="208">
 Exploit CVE-2016-7200.2	chakraBase.add(0x1DA2F5),
