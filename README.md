@@ -53,8 +53,8 @@ Only the Definition Files that a ScanCore client has in it's Definition Subscrip
 When a ScanCore client performs **Definition Updates**, it connects to a Git repository to download any Definition Files that match the local list of Definition Subscriptions.
 Definition Updates can be performed using one of two methods, including;
 
-1. Raw - Tries to download Definitions Files using _url_fopen_ first, then tries again if needed using cURL.
-2. Git - Tries to download Definitions Files using Git.
+1. Raw - Tries to download Definitions Files using _url_fopen_ first, then tries again if needed using _cURL_.
+2. Git - Tries to download Definitions Files using _Git_.
 
 Once Definition Files have been downloaded the ScanCore client compiles all Definition Files into a single local file known as the _Combined Definitions File_.
 A _Combined Definitions File_ contains the contents of every Definition File that appears in the list of Definition Subscriptions for that client.
