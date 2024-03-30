@@ -61,4 +61,5 @@ A _Combined Definitions File_ contains the contents of every Definition File tha
 Everything about Definition Updates can be adjusted in the _ScanCore_Config.php_ file present in all default ScanCore installations.
 Administrators can specify their own source for Definition Updates as well as specific subscriptions for precise, granular control over their environment.
 
+--------------------------------------------------
 <3 Open-Source
