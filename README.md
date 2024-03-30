@@ -5,7 +5,7 @@ This repository contains **Virus Definitions** for the **[ScanCore](https://gith
 
 It may seem obvious, but it is important to describe what a **Virus** means in the context of a Virus Scanner.
 For the purpose of this document, a "Virus" is considered to be a piece of computer code or software which causes unauthorized or unintended behaviour without the consent or approval of the owner or operator of the device.
-This definition encompasses what is commonly referred to as **Viruses**, (including _Trojans_, _Ransomware_, or _Worms_) **Malware** (including _Keyloggers_, _Botnets_ or _Trackers_) & **Potentially Unwanted Programs (PUPs)** (including _Remote Access Tools_, _Adware_, or _Auto-Miners_). 
+This definition encompasses what is commonly referred to as **Viruses** (including _Trojans_, _Ransomware_, or _Worms_), **Malware** (including _Keyloggers_, _Botnets_ or _Trackers_), & **Potentially Unwanted Programs (PUPs)** (including _Remote Access Tools_, _Adware_, or _Auto-Miners_). 
 
 ## About Virus Definitions
 
