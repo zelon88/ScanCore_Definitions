@@ -16,7 +16,7 @@ Definitions within this repository are contained within **Definition Files**.
 
 **Definition Files** are simple tab-separated files (TSV) with the _.def_ file extension.
 These files can be opened by any plain text editor to reveal their contents.
-The Definition Files contained within this repository all have the filename prefix _ScanCore__ & the file extension _.def_, but that is just to make things visually appealing.
+The Definition Files contained within this repository all have the filename prefix _ScanCore__ & the file extension _.def_, but that is just to make them visually appealing.
 ScanCore will accept Definitions Files with any filename prefix or file extension so long as the contents of the file are formatted properly.
 Definition Files contain individual **Virus Definitions** organized into lines.
 Each line is similar to a row in a spreadsheet, with each row representing a different strain of infection.
