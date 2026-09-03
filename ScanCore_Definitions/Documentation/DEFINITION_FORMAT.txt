@@ -1,0 +1,89 @@
+ScanCore Definition Format
+
+
+ONE INDICATOR PER LINE
+--------------------------------------------------------------------------------
+
+  <kind> <name> = <value> [attribute=value ...]
+
+  sha256 Trojan.Win32.DarkComet   = 7d14bfe...  src=legacy-hashes added=2026-09-03 confidence=high
+  name   Trojan.Win32.FormBook    = "Receipt.exe"           src=... confidence=low
+  host   Malware.C2.Emotet        = "evil.example"          src=urlhaus confidence=medium
+  url    Malware.Dropper.Foo      = "http://x/y.php"        src=urlhaus confidence=medium
+  data   Exploit.CVE-2016-7200    = "\x4d\x5a\x90"          scope=pdf confidence=medium
+
+A line beginning with a hash is a comment. A blank line is ignored.
+This is the same grammar the classifier definitions use, so there is one grammar
+to learn across both files & one parser style behind both.
+
+
+WHY ONE INDICATOR PER LINE
+--------------------------------------------------------------------------------
+
+The previous format packed a name & up to four indicators of different types into
+one tab delimited row, identified by column position. That format shipped with
+48 SHA256 values sitting in the MD5 column, one in the SHA1 column & three
+truncated hashes, none of which could ever match. A maintainer could not tell by
+looking whether column three held an MD5 or a SHA256, and neither could the
+scanner. Naming the kind on every line removes the whole class of error.
+
+
+KINDS
+--------------------------------------------------------------------------------
+
+  md5 sha1 sha256   A whole file hash. Exact match. Wrong length is a build error.
+  name              Matched against the file name only. Never against content.
+  data              Matched against file content only. Never against the path.
+  host              A host name. Matched in content, with a boundary rule, so
+                    ow.ly matches http://ow.ly/x but not snow.lyrics.
+  url               A full url. Matched in content only.
+
+The old format matched its single data column against BOTH the file path and the
+file content. 61% of those values were file names & 18% were network indicators,
+all being tested against everything. Separating the kinds removes the largest
+false positive class in the old set at no cost.
+
+
+ATTRIBUTES
+--------------------------------------------------------------------------------
+
+  src=<recipe>      Which source produced this. Lets a whole feed be distrusted
+                    and dropped when it turns out to be publishing rubbish.
+  added=<date>      When the build first emitted it.
+  confidence=       high, medium or low. See below.
+  scope=<type>      Restrict a data indicator to one classifier type, such as
+                    scope=pdf. Uses the same type names as the classifier file.
+  ref=<text>        An external reference, such as a CVE identifier.
+
+
+CONFIDENCE CHANGES THE OUTPUT LINE
+--------------------------------------------------------------------------------
+
+  confidence=high     reported as   Infected: <file> (...)
+  confidence=medium   reported as   Suspicious: <file> (...)
+  confidence=low      reported as   Suspicious: <file> (...)
+
+A whole file hash is an exact match & defaults to high. A string indicator is a
+heuristic & defaults to medium. This is what stops a filename pattern being
+reported with the same weight as a confirmed hash.
+
+HRConvert2 tests a ScanCore report for the string "Infected: " to decide whether
+a user upload is a threat. A Suspicious line therefore does NOT trip that test,
+which is the intent. A caller that wants to act on suspicion tests for
+"Suspicious: " as well.
+
+
+WHAT THE BUILDER REFUSES
+--------------------------------------------------------------------------------
+
+Policy/limits.txt sets a minimum & maximum length per kind. The old set shipped a
+four character signature named p.pw, which matched a clean file by chance in a
+2500 file test corpus. Nothing shorter than the minimum is built.
+
+Policy/allowlist.txt names values that may never become an indicator. The old set
+labelled protonmail.com, deviantart.com, goo.gl & ow.ly as Known Spyware Hosts,
+so any document mentioning ProtonMail was reported as infected. An allowlist
+entry covers subdomains, and a url is reduced to its host before comparison.
+
+Every refusal is counted & written to BUILD_REPORT.txt with the reason. A silent
+refusal is how a feed quietly stops contributing & nobody notices for a year.

@@ -1,0 +1,52 @@
+# ScanCore definition allowlist.
+# An indicator matching an entry here is never built into a definition file.
+# A host entry also covers its subdomains.
+# The previous definition set labelled protonmail.com, deviantart.com, goo.gl &
+# ow.ly as Known Spyware Hosts. Any document mentioning ProtonMail was therefore
+# reported as infected. This file is what stops that happening again.
+
+# Mail, identity & collaboration.
+protonmail.com
+proton.me
+gmail.com
+outlook.com
+office.com
+live.com
+icloud.com
+
+# Source hosting & package registries.
+github.com
+githubusercontent.com
+gitlab.com
+bitbucket.org
+sourceforge.net
+npmjs.com
+pypi.org
+packagist.org
+
+# Mainstream platforms & content hosts.
+google.com
+googleapis.com
+gstatic.com
+youtube.com
+deviantart.com
+wikipedia.org
+archive.org
+stackoverflow.com
+microsoft.com
+apple.com
+adobe.com
+mozilla.org
+cloudflare.com
+w3.org
+schemas.openxmlformats.org
+purl.org
+
+# Link shorteners operated by mainstream providers.
+# A shortener is abused constantly, but blocking the shortener itself flags every
+# legitimate link through it. Block the destination instead.
+goo.gl
+ow.ly
+bit.ly
+t.co
+tinyurl.com

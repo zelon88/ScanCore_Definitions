@@ -1,0 +1,21 @@
+# Malware distribution URLs from URLhaus.
+# Disabled by default. The abuse.ch export endpoints now require an account Auth-Key,
+# so this cannot be fetched anonymously. Set enabled to yes & supply your key in the
+# environment variable named below once you have one.
+# Not redistributed, for the same licensing reason as the CSCB recipe above.
+enabled      = no
+url          = https://urlhaus.abuse.ch/downloads/csv_online/
+authheader   = Auth-Key
+authenv      = SCANCORE_ABUSECH_KEY
+file         = urlhaus-online.csv
+format       = csv
+comment      = #
+skiplines    = 9
+kind         = url
+label        = Malware.URLhaus
+value        = column 3
+category     = Malware
+confidence   = medium
+license      = abuse.ch Terms of Use, free under fair use principles
+attribution  = Data from abuse.ch URLhaus, https://urlhaus.abuse.ch
+redistribute = no

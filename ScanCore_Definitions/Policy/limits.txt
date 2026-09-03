@@ -1,0 +1,21 @@
+# ScanCore definition build limits.
+# The builder refuses any indicator that fails one of these, & says so in the report.
+# These exist because the previous definition set shipped a four character signature
+# named p.pw, which matched ordinary content by chance.
+
+# Minimum length of an indicator value, per kind.
+# A hash has a fixed length & is checked against that instead.
+minlength name = 6
+minlength data = 8
+minlength host = 6
+minlength url  = 12
+
+# An indicator longer than this is almost certainly a pasted blob rather than a signature.
+maxlength name = 128
+maxlength data = 512
+maxlength host = 253
+maxlength url  = 2048
+
+# Refuse a build that produces more than this many indicators in one category.
+# A feed that suddenly grows tenfold is usually a format change, not a threat wave.
+maxentries = 500000

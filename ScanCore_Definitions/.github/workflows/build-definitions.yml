@@ -1,0 +1,43 @@
+# Rebuild the ScanCore definition files & open a pull request when they change.
+# This workflow deliberately does nothing the maintainer cannot do at home. It
+# installs PHP & runs the same one script, so a contributor can reproduce any
+# build locally with:  php Build/scancore-defs.php --all
+name: Build definitions
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        run: sudo apt-get update && sudo apt-get install -y php-cli
+
+      - name: Fetch, build and verify
+        env:
+          SCANCORE_ABUSECH_KEY: ${{ secrets.SCANCORE_ABUSECH_KEY }}
+        run: php Build/scancore-defs.php --all
+
+      - name: Show the build report
+        run: cat BUILD_REPORT.txt
+
+      - name: Open a pull request if the definitions changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'Rebuild definitions'
+          title: 'Rebuild definitions'
+          body-file: BUILD_REPORT.txt
+          branch: definitions/rebuild
+          add-paths: |
+            ScanCore_*.def
+            Sources/**
+            BUILD_REPORT.txt

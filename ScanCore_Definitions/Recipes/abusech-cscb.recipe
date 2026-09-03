@@ -1,0 +1,19 @@
+# Code signing certificates used to sign malware, published by abuse.ch.
+# Fetched at build time. NOT redistributed, because the abuse.ch terms of use make
+# the data free under fair use principles while noting that commercial or for profit
+# use may require a paid subscription. HRConvert2 is GPLv3 & is deployed
+# commercially, so baking this data into a public artefact would hand downstream
+# operators an obligation they never agreed to. Build it at home instead.
+url          = https://bazaar.abuse.ch/export/csv/cscb/
+file         = abusech-cscb.csv
+format       = csv
+comment      = #
+skiplines    = 0
+kind         = sha256
+label        = Malware.SignedByRevokedCertificate
+value        = column 4
+category     = Malware
+confidence   = medium
+license      = abuse.ch Terms of Use, free under fair use principles
+attribution  = Data from abuse.ch MalwareBazaar, https://bazaar.abuse.ch
+redistribute = no

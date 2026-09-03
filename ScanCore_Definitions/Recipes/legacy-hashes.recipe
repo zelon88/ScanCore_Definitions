@@ -1,0 +1,15 @@
+# The hash seed carried forward from the pre v1.8 ScanCore definition set.
+# These are whole file hashes & are exact match, so age costs them nothing & they
+# carry no false positive risk. Every string signature from that set was discarded.
+# This source has no url, so the builder never tries to fetch it.
+file         = legacy-hashes.txt
+format       = tsv
+comment      = #
+kind         = column 1
+label        = column 2
+value        = column 3
+category     = Virus
+confidence   = high
+license      = GPLv3, carried forward from github.com/zelon88/ScanCore_Definitions
+redistribute = yes
+attribution  = ScanCore project

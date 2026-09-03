@@ -1,0 +1,5 @@
+# ScanCore definition build report, 2026-09-03.
+# Every line here is something the build refused, changed or could not do.
+
+ERROR!!!    Recipe abusech-cscb has no source file at /home/claude/defs/Sources/abusech-cscb.csv
+WARNING!!!  Category Local:Malware produced no indicators, so no file was written.
