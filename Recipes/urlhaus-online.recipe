@@ -1,18 +1,21 @@
 # Malware distribution URLs from URLhaus.
-# Disabled by default. The abuse.ch export endpoints now require an account Auth-Key,
-# so this cannot be fetched anonymously. Set enabled to yes & supply your key in the
-# environment variable named below once you have one.
+# Disabled by default only because it needs an account Auth-Key. The matcher can now
+# carry a feed this size: a url indicator is extracted from the data once & looked up,
+# rather than searched for one indicator at a time, so fifty thousand urls cost the
+# same as five hundred. Enable it once you have a key.
 # Not redistributed, for the same licensing reason as the CSCB recipe above.
 enabled      = no
-url          = https://urlhaus.abuse.ch/downloads/csv_online/
-authheader   = Auth-Key
+url          = https://urlhaus-api.abuse.ch/v1/urls/csv_online/{AUTHKEY}/
 authenv      = SCANCORE_ABUSECH_KEY
 file         = urlhaus-online.csv
 format       = csv
 comment      = #
 skiplines    = 9
 kind         = url
-label        = Malware.URLhaus
+label        = column 6
+labelprefix  = Malware.URLhaus.
+labeldefault = Unknown
+nullvalues   = n/a,none,null,unknown,-
 value        = column 3
 category     = Malware
 confidence   = medium

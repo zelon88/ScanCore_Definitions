@@ -1,13 +1,24 @@
-# Rebuild the ScanCore definition files & open a pull request when they change.
-# This workflow deliberately does nothing the maintainer cannot do at home. It
-# installs PHP & runs the same one script, so a contributor can reproduce any
-# build locally with:  php Build/scancore-defs.php --all
+# Rebuild the definition files that this repository is allowed to publish, and open
+# a pull request when they change.
+#
+# This workflow deliberately does nothing a maintainer cannot do at home. It installs
+# PHP and runs the same one script, so any build here is reproducible locally with:
+#
+#   php Build/scancore-defs.php --all --redistributable-only
+#
+# It runs with --redistributable-only on purpose. A source whose recipe says
+# redistribute = no is never fetched here at all, because committing the raw download
+# would republish the feed just as surely as committing the built definitions would.
+# Those sources are built at home, into Local/, which is gitignored.
 name: Build definitions
 
 on:
+  # Manual runs. This button only appears once this file is on the default branch.
+  workflow_dispatch:
+  # Weekly. Scheduled runs also only fire from the default branch, and GitHub disables
+  # them in a repository with no activity for 60 days.
   schedule:
     - cron: '17 4 * * 1'
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -23,11 +34,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y php-cli
 
       - name: Fetch, build and verify
-        env:
-          SCANCORE_ABUSECH_KEY: ${{ secrets.SCANCORE_ABUSECH_KEY }}
-        run: php Build/scancore-defs.php --all
+        run: php Build/scancore-defs.php --all --redistributable-only
 
       - name: Show the build report
+        if: always()
         run: cat BUILD_REPORT.txt
 
       - name: Open a pull request if the definitions changed
@@ -37,7 +47,8 @@ jobs:
           title: 'Rebuild definitions'
           body-file: BUILD_REPORT.txt
           branch: definitions/rebuild
+          delete-branch: true
           add-paths: |
             ScanCore_*.def
-            Sources/**
+            Sources/*
             BUILD_REPORT.txt

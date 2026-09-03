@@ -1,5 +1,7 @@
 # ScanCore definitions, Virus category.
-# Built by Build/scancore-defs.php on 2026-09-03. Do not edit by hand.
+# Built by ScanCore_Definitions v1.8 on 2026-09-03. Do not edit by hand.
+# Definition format: v1.8
+# Source: https://github.com/zelon88/ScanCore_Definitions
 # Indicators: 906
 #
 # Source legacy-hashes:  GPLv3, carried forward from github.com/zelon88/ScanCore_Definitions

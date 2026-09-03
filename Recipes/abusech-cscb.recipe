@@ -1,17 +1,31 @@
 # Code signing certificates used to sign malware, published by abuse.ch.
-# Fetched at build time. NOT redistributed, because the abuse.ch terms of use make
-# the data free under fair use principles while noting that commercial or for profit
-# use may require a paid subscription. HRConvert2 is GPLv3 & is deployed
-# commercially, so baking this data into a public artefact would hand downstream
-# operators an obligation they never agreed to. Build it at home instead.
+#
+# WHAT THIS MAPS, AND WHY IT IS NOT A HASH
+# The CSCB carries a thumbprint column, which is the hash OF THE CERTIFICATE.
+# It is not the hash of any file, so mapping it to sha256 would build hundreds of
+# definitions that load cleanly and can never match anything. That is the exact
+# failure the retired definition format shipped with & it is not repeated here.
+# The serial_number column is different. A serial number really is stored inside a
+# signed executable, as raw bytes in the certificate table, so it is decoded from
+# hex and matched as a byte signature against file content.
+#
+# Confidence is medium. A blocklisted serial in a file is strong evidence but the
+# match is a byte sequence rather than a whole file hash, so it reports Suspicious.
+#
+# NOT redistributed. The abuse.ch terms make the data free under fair use
+# principles while noting that commercial or for profit use may require a paid
+# subscription. HRConvert2 is GPLv3 & is deployed commercially, so baking this into
+# a published artefact would hand downstream operators an obligation they never
+# agreed to. Build it at home instead.
 url          = https://bazaar.abuse.ch/export/csv/cscb/
 file         = abusech-cscb.csv
 format       = csv
 comment      = #
-skiplines    = 0
-kind         = sha256
-label        = Malware.SignedByRevokedCertificate
-value        = column 4
+kind         = data
+value        = column 2
+transform    = hexbytes
+label        = column 9
+labelprefix  = Malware.SignedCert.
 category     = Malware
 confidence   = medium
 license      = abuse.ch Terms of Use, free under fair use principles

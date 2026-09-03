@@ -1,3 +1,7 @@
 # Definitions built from a source that may not be redistributed.
 # These are built at home from feeds whose terms do not permit republication.
 Local/
+
+# The raw downloads for those same sources. Committing the raw feed would
+# redistribute it just as surely as committing the built definitions would.
+Sources/Local/

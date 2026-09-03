@@ -1,0 +1,150 @@
+ScanCore_Definitions CHANGELOG
+
+This is the changelog for the ScanCore_Definitions application, which collects raw
+threat feeds and builds them into ScanCore definition files. It is standalone.
+ScanCore has its own CHANGELOG.txt covering the scanner, and the two are separate
+applications with separate version numbers that happen to share a release number
+today.
+
+
+v1.8
+--------------------------------------------------------------------------------
+First release.
+
+Purpose
+
+- Replaces the hand maintained definition file that ScanCore shipped with until
+  v1.8. That file had 2435 records, of which 1936 could never match anything
+  because the format retained line endings and poisoned the last field of every
+  line. It also labelled protonmail.com, deviantart.com, goo.gl and ow.ly as
+  known spyware hosts, so any document mentioning ProtonMail was reported as
+  infected. Neither problem was visible to a maintainer reading the file.
+- Every definition this application publishes is built from a declared source,
+  through a declared policy, with an account of everything refused.
+
+Components
+
+- scancore-defs.php carries the core logic and declares the application version
+  near the top of the file.
+- scancore-defs-version.php is the version manifest. It is an EXACT match against
+  the builder, because the two are one release.
+- scancore-defs-config.php holds every path, name and fetch setting. It is a
+  MINIMUM match against the builder, so a newer configuration carrying every
+  required setting is accepted while an older one is refused.
+- The builder refuses to start unless both are present and both check out. A
+  builder running against the wrong half of a release produces a definition file
+  that looks correct and is not, which is worse than not running at all.
+
+Definition format
+
+- One indicator per line, keyword led, self describing:
+    sha256 Trojan.Win32.DarkComet = 7d14bfe... src=legacy-hashes confidence=high
+    host   Malware.C2.Emotet      = "evil.example" confidence=medium
+- Kinds are md5, sha1, sha256, name, data, host and url. A name indicator is
+  matched against the file name only and a data indicator against content only.
+  The retired format matched its single column against both.
+- confidence=high is reported by ScanCore as Infected. Anything else is reported
+  as Suspicious. A whole file hash defaults to high, a string indicator to medium.
+- A byte with no printable form is written as \xNN, so a definition file stays a
+  text file a person can read in a diff.
+- The header of every built file names the application, its version, the
+  definition format version and the repository that produced it.
+
+Build policy
+
+- Policy/limits.txt sets a minimum and maximum length per kind. The retired set
+  shipped a four character signature named p.pw which matched a clean file by
+  chance in a 2500 file test corpus.
+- Policy/limits.txt also sets a minimum variety for a byte signature, in bits per
+  byte, and a maximum run of one repeated byte. A signature is searched through
+  every byte of every file, so a value made of one repeated byte matches the
+  padding in ordinary binaries constantly. Measured against 400 clean system
+  binaries, four low variety certificate serials produced 534 false positives
+  while 404 ordinary serials produced none.
+- Policy/allowlist.txt names values that may never become an indicator. An entry
+  covers subdomains, and a url is reduced to its host before comparison.
+- Every refusal is counted and written to BUILD_REPORT.txt with its reason and,
+  where it was measured, the measurement.
+
+Reporting
+
+- A build now states the margin it had on what it accepted, not only what it
+  refused. A run reporting no refusals otherwise tells you nothing about whether
+  the policy was comfortable or one bad row away from trouble:
+    Recipe abusech-cscb produced 404 indicators from 417 source lines.
+      Shortest accepted 16 bytes against a minimum of 8.
+      Least varied 3.63 bits per byte against a minimum of 2.0.
+- The margin report names the ceiling as well as the floor for variety. Entropy
+  cannot exceed log2 of the value length, so an eight byte value can never score
+  above 3.00 no matter how well formed it is. Reporting 3.00 against a floor of
+  2.0 without that context reads as a near miss when it is in fact a perfect
+  score. The report now says so.
+- The margin report also names the longest repeated byte run in what was
+  accepted. Entropy alone is length capped, so a short value can look varied
+  while still holding a run long enough to match padding in an ordinary binary.
+  A value of four zero bytes followed by four distinct ones scores exactly 2.00
+  and passes both current limits.
+- A source row that maps to an empty kind, name or value is now counted and
+  reported. It used to be skipped in silence, which meant a serial with an odd
+  number of hex digits, a non hex serial or an empty column simply evaporated.
+  A row that quietly disappears is how a broken transform or a shifted column
+  survives, because every count downstream still reports success.
+
+Licensing
+
+- Every recipe declares a license and a redistribute field. A recipe declaring no
+  license is skipped rather than guessed at.
+- A source marked redistribute = yes is built into the definition files this
+  repository publishes. Anything else is built into Local/, and its raw download
+  is kept in Sources/Local/. Both are gitignored, because committing the raw feed
+  would republish it as surely as committing the built file would.
+- --redistributable-only skips a non redistributable recipe without even fetching
+  it. The GitHub Action uses that.
+
+Recipe features
+
+- A recipe may now carry {AUTHKEY} in its url, replaced from the environment
+  variable named by authenv. abuse.ch moved its export endpoints to carrying the
+  key in the address rather than in a header, & providers use both. The key is
+  never printed, so an address reported in the log keeps the placeholder.
+- Added nullvalues, naming the placeholders a feed writes where it has nothing.
+  MalwareBazaar writes None for an absent sha1 & n/a for an unattributed sample.
+  Those are the absence of data, not a family called n/a.
+- Added labeldefault, used when the label column holds one of those placeholders.
+
+Sources
+
+- legacy-hashes carries forward the 906 unique whole file hashes recovered from
+  the retired definition set. Those are exact match indicators, so age costs them
+  nothing and they carry no false positive risk. Every string signature from that
+  set was discarded.
+- abusech-cscb maps the abuse.ch code signing certificate blocklist. It maps the
+  serial number column, decoded from hex into the bytes a signed file actually
+  carries. It deliberately does not map the thumbprint column, which is the hash
+  of the certificate rather than of any file and could never match anything.
+- malwarebazaar-recent maps the last 48 hours of sample hashes, labelled by the
+  signature column, which is MalwareBazaar's name for the malware family. Only
+  sha256 is mapped, because ScanCore computes all three hashes of every file and
+  checks all three, so building md5 and sha1 for the same sample would triple the
+  count and detect nothing extra.
+- malwarebazaar-full maps the whole dump & is disabled for reasons beyond the key.
+  Measured against 1,129,343 samples the built file is 189 MB, takes 10.7 seconds
+  to load & holds 1,054 MB of interpreter memory. A lookup is still free at
+  0.009 ms, so the cost is in holding the set rather than using it. That is not
+  usable for a scanner invoked once per upload, & the file also exceeds the 100 MB
+  per file limit GitHub enforces. Use the recent recipe.
+- urlhaus-online is present and disabled. It needs an Auth-Key, not a better
+  matcher: a feed of that size is now affordable.
+- All five recipes needing a key are disabled by default.
+
+Known limits
+
+- A hash indicator costs nothing to add. A data, host or url indicator is searched
+  through every byte of every file, so cost grows with indicator count times data
+  size. Measured on a 240 MB corpus, 404 byte signatures added 8.6 seconds to a
+  15.4 second scan. A feed of 200,000 URLs would add roughly seventy minutes.
+  Do not enable a feed of that scale without capping the number of string
+  indicators, restricting them with scope=, or replacing the per indicator search
+  with a multi pattern matcher.
+- The maxentries limit defaults to 500,000, which is reasonable for hashes and far
+  too high for string indicators.
