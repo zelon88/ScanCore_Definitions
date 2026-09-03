@@ -1,65 +1,59 @@
-This repository contains **Virus Definitions** for the **[ScanCore](https://github.com/zelon88/ScanCore) Virus Scanner**.
+# ScanCore Definitions
 
-## About Viruses
+Threat definitions for [ScanCore](https://github.com/zelon88/ScanCore), built from
+raw feeds by one script that runs the same way here as it does on a maintainer's
+laptop.
 
+    php Build/scancore-defs.php --all
 
-It may seem obvious, but it is important to describe what a **Virus** means in the context of a Virus Scanner.
-For the purpose of this document, a "Virus" is considered to be a piece of computer code or software which causes unauthorized or unintended behaviour without the consent or approval of the owner or operator of the device.
-This definition encompasses what is commonly referred to as **Viruses** (including _Trojans_, _Ransomware_, or _Worms_), **Malware** (including _Keyloggers_, _Botnets_ or _Trackers_), & **Potentially Unwanted Programs (PUPs)** (including _Remote Access Tools_, _Adware_, or _Auto-Miners_). 
+## How it fits together
 
-## About Virus Definitions
+    Recipes/     one file per source: where to fetch it, how to read it, what it may become
+    Sources/     the raw download, committed exactly as it arrived
+    Policy/      length limits & the allowlist of values that may never become indicators
+    Build/       the one script
+    ScanCore_*.def   built output, committed, what ScanCore downloads
+    Local/       built output from sources that may not be redistributed, never committed
+    BUILD_REPORT.txt  everything the build refused, and why
 
-**Virus Definitions** are descriptive data artifacts that the ScanCore Virus Scanner uses to identify specific strains of infection during scanning operations.
-Definitions within this repository are contained within **Definition Files**.
+Sources are committed raw so a build is reproducible from what is in the
+repository, and so a feed that turns out to be publishing rubbish can be traced
+after the fact rather than argued about.
 
-## About Definition Files
+## Licensing, and why Local exists
 
-**Definition Files** are simple tab-separated files (TSV) with the _.def_ file extension.
-These files can be opened by any plain text editor to reveal their contents.
-The Definition Files contained within this repository all have the filename prefix _ScanCore__ & the file extension _.def_, but that is just to make them visually appealing.
-ScanCore will accept Definitions Files with any filename prefix or file extension so long as the contents of the file are formatted properly.
-Definition Files contain individual **Virus Definitions** organized into lines.
-Each line is similar to a row in a spreadsheet, with each row representing a different strain of infection.
-Each row is organized into columns which are separated by the tab character.
-Each column represents a different piece of information about the infection in the corresponding row.
-The columns contained within a row are ordered as follows;
+This repository is GPLv3. A threat feed is not. Those two facts do not merge just
+because the data passed through a build script.
 
-1. Infection Name
-2. Raw Data Match
-3. MD5 Hash
-4. SHA1 Hash
-5. SHA256 Hash
+Every recipe declares a `license` and a `redistribute` field, and a recipe that
+declares no license is skipped rather than guessed at. A source marked
+`redistribute = yes` is built into the `ScanCore_*.def` files this repository
+publishes. Anything else is built into `Local/`, which is gitignored.
 
-If a piece of data is not available for a strain of infection, that column can be left blank.
-If there are no more columns of a row that contain any data, the remaining columns of the row can be omitted.
-Definition Files themselves within this repository are organized into **Definition Subscriptions** represented in the filename after the _ScanCore__ prefix, before the _.def_ file extension.
+abuse.ch data is a worked example. It is free under their fair use principles,
+but their terms note that commercial or for-profit use may require a paid
+subscription, and their exports now need an account Auth-Key. HRConvert2 is GPLv3
+and is deployed commercially, so baking that data into a published artefact would
+hand a downstream operator an obligation they never agreed to. The recipes are
+included and work; they build to `Local/`. Fetch them at home with your own key.
 
-## About Definition Subscriptions
+## Adding a source
 
+Write a recipe. No code changes.
 
-ScanCore client installations can subscribe to specific **Definition Subscriptions**.
-Each definition file in this repository contains a different Definition Subscription.
-Definition Subscriptions currently represent the major different types of infection, including;
+    url          = https://example.org/feed.csv
+    file         = example-feed.csv
+    format       = csv
+    comment      = #
+    skiplines    = 1
+    kind         = sha256
+    label        = Malware.ExampleFeed
+    value        = column 2
+    category     = Malware
+    confidence   = medium
+    license      = CC0, verified 2026-09-03
+    redistribute = yes
 
-1. Viruses
-2. Malware
-3. Potentially Unwanted Programs (PUPs)
+`kind`, `label` and `value` each accept a literal or `column N`.
 
-In the future the list of subscriptions may expand to include geographic locations, industries, or more specific strains of infection.
-Only the Definition Files that a ScanCore client has in it's Definition Subscriptions will be installed during **Definition Updates**.
-
-## About Definition Updates
-
-When a ScanCore client performs **Definition Updates**, it connects to a Git repository to download any Definition Files that match the local list of Definition Subscriptions.
-Definition Updates can be performed using one of two methods, including;
-
-1. Raw - Tries to download Definitions Files using _url_fopen_ first, then tries again if needed using _cURL_.
-2. Git - Tries to download Definitions Files using _Git_.
-
-Once Definition Files have been downloaded the ScanCore client compiles all Definition Files into a single local file known as the _Combined Definitions File_.
-A _Combined Definitions File_ contains the contents of every Definition File that appears in the list of Definition Subscriptions for that client.
-Everything about Definition Updates can be adjusted in the _ScanCore_Config.php_ file present in all default ScanCore installations.
-Administrators can specify their own source for Definition Updates as well as specific subscriptions for precise, granular control over their environment.
-
---------------------------------------------------
-<3 Open-Source
+See `Documentation/DEFINITION_FORMAT.txt` for the definition grammar itself.
