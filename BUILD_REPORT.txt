@@ -1,6 +1,4 @@
-# ScanCore_Definitions v1.8 build report, 2026-09-03.
+# ScanCore_Definitions v1.8 build report, 2026-10-19.
 # Every line here is something the build refused, changed or could not do.
 
-DROPPED     abusech-cscb:  too little variety to be a signature, 0.54 bits per byte against a minimum of 2  (1 indicators)
-DROPPED     abusech-cscb:  too little variety to be a signature, 0.34 bits per byte against a minimum of 2  (1 indicators)
-DROPPED     abusech-cscb:  too little variety to be a signature, 0.00 bits per byte against a minimum of 2  (2 indicators)
+Nothing was refused or skipped.
